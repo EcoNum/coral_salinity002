@@ -1,0 +1,19 @@
+---
+output: pdf_document
+---
+
+\begin{abstract}
+
+Réponse écophysiologique de \emph{Seriatopora hystrix} (Dana, 1846) suite à un stress hypo ou hypersalin à court terme
+
+\textbf{Mots clés} : \emph{Seriatopora hystrix}, scléractinaire, écophysiologiques, salinité, photosynthèse, respirométrie
+
+Depuis plusieurs années, les changements climatiques et les effets qu’ils engendrent sur les écosystèmes intéressent fortement les scientifiques. Dans le cadre de ce mémoire, il sera question de l’impact des changements locaux de salinité, qu’ils s’agissent d’une diminution ou d’une augmentation, sur une courte durée. En effet, ces phénomènes sont de plus en plus fréquents dû par exemple à une augmentation du taux de précipitation ou du nombre de tempêtes tropicales mais encore à l’augmentation des usines de dessalement dans les pays arides.
+
+Le but de cette étude est de comprendre les effets des changements de salinité sur les écosystèmes coralliens et plus particulièrement sur l’espèce de scléractiniaire hermatypique \emph{Seriatopora hystrix} (Dana, 1846). Pour ce faire, différents paramètres écophysiologiques tel que la respiration, la photosynthèse et la croissance sont étudiés à l’aide de chambre respirométrique où les salinités expérimentales sont fixées à 28 et 42.
+
+Les effets engendrés sont, tout d’abord, une décoloration des boutures face aux changements de salinité, une diminution du taux de croissance, et du taux de calcification, dans les deux conditions. Ces diminutions étant plus marquées dans le cas d’une augmentation de salinité. Un autre effet important des chocs salins s’observe par la diminution de la photosynthèse nette chez l’ensemble des boutures stressées et d’une diminution de la respiration chez celles mises en conditions hypersalines. A la fin de l’expérience de salinité, le taux de croissance et la coloration ont continué à être monitorés et ont montré un retour à des conditions normales après plusieurs semaines à une salinité de 35.
+
+L’ensemble de ces résultats montre un impact non-négligeable des changements de salinité sur cette espèce de corail. Malgré cela, d’autres études ont montré des effets espèces- spécifiques amenant à la conclusion que les effets ne peuvent être généralisés et que de plus amples études doivent être menées afin de mieux comprendre les mécanismes liés à l’impact du changement de salinité.
+
+\end{abstract}

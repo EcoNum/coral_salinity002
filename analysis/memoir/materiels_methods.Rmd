@@ -1,0 +1,31 @@
+---
+bibliography: ../bibliography/coral_salinity_biblio.bib
+output:
+  word_document: default
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: template/preamble-latex-fr.tex
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+# Matériels & méthodes
+
+## Poids immergé et squelettique
+
+La masse squelettique des boutures utilisées lors de ce mémoire est mesurée de manière régulière afin de suivre leur croissance au cours du temps. Pour cela, chaque bouture est pesée en immersion dans l’eau de mer afin d’éviter un stress inutile qu’engendrerait une pesée hors de l’eau. La balance (Sartorius LE823P, Allemagne) utilisée est munie d’un crochet permettant de suspendre la bouture par son fil de nylon dans un récipient rempli de la même eau de mer d’où provient la bouture (\autoref{buoyant_weight}). De plus, la salinité et la température de l’eau sont mesurées (salinomètre WTW Cond 340i, Allemagne) afin de déterminer précisément la densité de l’eau de mer utilisée lors de la pesée.
+
+![Technique de mesure du poids immergé d'une bouture de S.hystrix (Photo : Georges Nadège) \label{buoyant_weight}](images/buoyant_weight.png)
+
+Le poids squelettique des boutures est déterminé à partir de la mesure de poids immergé, de la densité du squelette en aragonite et de la densité de l’eau de mer utilisée pour celle-ci  [@Jokiel1978]. Dans un premier temps, la densité de l’eau de mer est déterminée par l’équation d’état de l’eau de mer à l’aide des mesures de températures et de salinité. Dans un second temps, le poids squelettique est déterminé à l’aide l’équation \ref{eq_buoyant} :
+
+\begin{equation} \label{eq_buoyant}
+  P_{squelettique} = \frac{P_{immergé}}{ \frac{1 - \rho_{eau}}{ \rho_{squelette}}}
+\end{equation} 
+
+
+Où $P_{immergé}$ correspond au poids immergé de la bouture considérée, $\rho_{eau}$ correspond à la densité de l’eau de mer calculée, grâce aux données de salinité et de température, par l’intermédiaire de l’équation d’état de l’eau de mer et $\rho_{squelette}$ correspond à la densité de l’aragonite formant le squelette de la bouture.
+
+La détermination du poids squelettique a une importance primordiale dans le cadre des expériences de salinité effectuées dans ce mémoire. En effet, la densité de l’eau est directement liée à température et la salinité et ce dernier paramètre variera fortement lors de la phase expérimentale. Cette conversion permettra donc de standardiser les poids immergés et donc d’avoir des mesures comparables dans le temps.
+

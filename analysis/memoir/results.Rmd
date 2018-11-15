@@ -1,0 +1,238 @@
+---
+output:
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: template/preamble-latex-fr.tex
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+# Résultats
+
+```{r, message = FALSE, results='hide'}
+# Package ----
+SciViews::R
+library(knitr)
+
+# datasets ----
+pc <- read("../../data/physico.rds")
+at <-  read("../../data/alcalinity.rds")
+nu_cs <-  read("../../data/nutrient.rds")
+growth <- read("../../data/growth.rds")
+# function ----
+source(file = "../../R/function.R")
+```
+
+## Paramètres physico-chimiques
+
+### Salinité {#salinity}
+
+Les variations de salinité au cours de l’expérience n’ont lieu que lors du démarrage et de l’arrêt de l’expérience. Ces changements ont été effectués sur une durée de 6 heures. Dans l’aquarium hypersalin, une salinité de 41.7 ± 0.2 est obtenue avec l’ajout d’eau de mer sursalée alors que l’aquarium hyposalin atteint une salinité de 27.9 ± 0.5  avec l’ajout d’eau osmosée. Les ajouts ont été réalisés progressivement en contrôlant après chaque ajout la valeur de salinité afin de ne pas dépasser les valeurs expérimentales souhaitées. Lors du retour à la salinité initiale de 35 dans les bacs expérimentaux, le système de connections entre les différentes parties du mésocosme A est rétabli afin de permettre une communication des eaux entre les 3 bacs et ainsi revenir progressivement à une salinité homogène dans l’entièreté du mésocosme A
+
+Au cours de l’expérience, la salinité est restée stable \autoref{salinity_tab} avec des variations d’une ou deux unités dues à l’évaporation de l’eau mais ont été compensées par ajout d’eau osmosée dans le système.
+
+```{r}
+pc %>.%
+  filter(., periode == "experience") %>.%
+  group_by(., code) %>.%
+  summarise(., mean = round(mean(S), digits = 2), 
+            sd = round(sd(S), digits = 2), number = n()) %>.%
+  kable(.[ , 1:3], format = "latex",align = "c",
+        col.names = c("Conditions", "Moyenne", "Ecart-type") , 
+        caption = "Salinité au cours de l'expérience \\label{salinity_tab}")
+```
+
+
+
+
+### Température
+
+Au cours de l’expérience, les températures présentent une variation journalière avec une augmentation de jour et une diminution de nuit (\autoref{temp_plot}). Il est à noter que les variations de température sont plus importantes dans le bac expérimental hyposalin que dans les deux autres bacs.
+
+```{r, fig.cap= "Variation de la température au cours de l'expérience d'hypo- et d'hypersalinité dans le bac contrôle (rouge) et les bacs expérimentaux (bleu et vert). Les zones grises représentent les périodes de nuit \\label{temp_plot}"}
+pc %>.%
+  filter(., T != "NA") %>.%
+  pc_plot(data = ., y = "T", x = "number_day", factor = "code",
+        rect_start = 29.83 + 0:5, rect_end = (29.83 + 0:5) + 0.5)
+
+```
+
+
+### pH
+
+Les variations de pH total au sein des différents bacs se produisent entre le jour et la nuit (\autoref{ph_plot}). En effet, la valeur de pH total augmente lorsque les éclairages sont allumés et diminue lorsque ceux-ci sont éteints, montrant une variation diurne de ce paramètre .
+
+Les variations de jour et de nuit suivent les mêmes tendances entre le bac contrôle et le bac hyposalin. En ce qui concerne le bac hypersalin, les variations entre le jour et la nuit sont moins importantes que pour les deux autres conditions.
+
+```{r, fig.cap= "Variation de pH total au cours de l'expérience d'hypo- et d'hypersalinité dans le bac contrôle (rouge) et dans les bacs expérimentaux (bleu et vert). Les zones grises représentent les périodes de nuit.\\label{ph_plot }"}
+pc %>.%
+  filter(., ph != "NA"  & number_day >33 ) %>.%
+pc_plot(data = ., y = "ph", x = "number_day", factor = "code",
+        rect_start = 29.83 + 0:5, rect_end = (29.83 + 0:5) + 0.5) 
+```
+
+
+### Nutriments
+
+#### Orthophosphates
+
+La variation des orthophosphates dans les différents bacs (\autoref{PO4_fig}) suit une tendance où la concentration diminue de jour et augmente de nuit. Cela est visible facilement pour le bac contrôle alors que cette variation ne commence à apparaitre clairement qu’à partir du jour 31 dans les deux bacs expérimentaux. Il est à noter qu’au cours de l’expérience, la concentration en orthophosphates est plus élevée dans le bac contrôle que dans les bacs expérimentaux. Au niveau des bacs expérimentaux, la concentration est plus basse dans le bac hyposalin mais les valeurs deviennent semblables à celle du bac hypersalin à partir du jour 33.
+
+```{r, fig.cap= "Variation de la concentration en orthophosphates au cours de l'expérience d'hypo- et d'hypersaline dans le bac contrôle (rouge) et dans les bacs expérimentaux (bleu et vert). Les zone grises représentent les périodes de nuit \\label{PO4_fig}"}
+nu_cs %>.%
+  filter(., respi == "A0" |respi == "A1" |respi == "A2",
+         Ptot_conc != "NA") %>.%
+  pc_plot(data = ., y = "PO4_conc", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:7, rect_end = (29.83 + 0:7) + 0.5)
+```
+
+#### Azote inorganique
+
+L’azote inorganique considéré regroupe les ions nitrates ($NO3^-$), les ions nitrites ($NO2^-$) et les ions ammoniums ($NH4^+$).
+Les variations de la concentration en azote inorganique se marquent dans les bacs par une diminution de jour et une augmentation de nuit (\autoref{nino_plot}). En ce qui concerne les valeurs de concentration, elles semblent proches entre la condition contrôle et la condition hypersaline tandis que la condition hyposaline montre des valeurs en azote plus faibles. Une diminution est également visible à partir du jour 33 jusqu’à la fin de l’expérience menant pour la condition hyposalin a des valeurs proches de zéro.
+
+```{r, fig.cap= "Variation de la concentration en azote inorganique ( A = nitrate et nitrite, B = ammonium) au cours de l'expérience d'hypo- et d'hypersaline dans le bac contrôle (rouge) et dans les bacs expérimentaux (bleu et vert). Les zone grises représentent les périodes de nuit \\label{nino_plot}"}
+nu_cs %>.%
+  filter(., respi == "A0" |respi == "A1" |respi == "A2",
+         NOx_conc != "NA") %>.%
+  pc_plot(data = ., y = "NOx_conc", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:7, rect_end = (29.83 + 0:7) + 0.5) -> a
+nu_cs %>.%
+  filter(., respi == "A0" |respi == "A1" |respi == "A2",
+         NH4_conc != "NA") %>.%
+  pc_plot(data = ., y = "NH4_conc", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:7, rect_end = (29.83 + 0:7) + 0.5) -> b
+
+combine_charts(chartlist = list(a,b), common.legend = TRUE)
+```
+
+#### Phosphore total dissous
+
+Les variations de phosphore dans le bac contrôle ainsi que les bacs expérimentaux suivent une tendance où la concentration diminue de jour et augmente de nuit (\autoref{ptot_plot}). Cette tendance est tout de même plus instable à partir du jour 34. La concentration en phosphore organique possède des valeurs plus élevées dans le bac contrôle comparé aux expérimentaux où la condition hyposaline montre la valeur la plus faible au cours de l’expérience.
+
+```{r, fig.cap="Variation du phosphore organique au cours de l'expérience d'hypo- et d'hypersalinité dans le bac contrôle (rouge) et dans les bacs expérimentaux (bleu et vert). Les zones grises correspondent aux périodes de nuit. \\label{ptot_plot}"}
+nu_cs %>.%
+  filter(., respi == "A0" |respi == "A1" |respi == "A2",
+         Ptot_conc != "NA") %>.%
+  pc_plot(data = ., y = "Ptot_conc", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:7, rect_end = (29.83 + 0:7) + 0.5)
+```
+
+#### Azote organique
+
+Les variations d’azote organique dans les trois bacs (\autoref{ntot_plot}) sont de manière générale assez stables de jour et de nuit. Il faut tout de même noter la présence d’une variation plus importante à partir du jour 33 mais elles redeviennent stables à partir de la fin du jour 35. De plus, comme observé généralement pour les autres nutriments, la concentration en azote organique est plus faible dans la condition hyposalin tandis que les valeurs sont assez proches entre le bac contrôle et le bac hypersalin.
+
+```{r, fig.cap="Variation de l’azote organique au cours de l'expérience d'hypo- et d'hypersalinité dans le bac contrôle (rouge) et dans les bacs expérimentaux (bleu et vert). Les zones grises correspondent aux périodes de nuit. \\label{ntot_plot}"}
+nu_cs %>.%
+  filter(., respi == "A0" |respi == "A1" |respi == "A2",
+         Ntot_conc != "NA") %>.%
+  pc_plot(data = ., y = "Ntot_conc", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:7, rect_end = (29.83 + 0:7) + 0.5)
+```
+
+
+
+## Croissance des coraux
+
+### Taux de Croissance
+
+L’évolution du taux de croissance tout au long de l’expérience est présentée à la \ref{growth_rate}. Lors de la phase d’acclimatation, l’ensemble des boutures ont été maintenues dans le bac contrôle et montrent une augmentation du taux de croissance pour atteindre une croissance moyenne de 1,2 ± 0,2 %/j (n = 16) à la fin de cette période.
+
+```{r fig.cap="Variation du taux de croissance (%/j), calculé entre chaque point de mesure du poids immergé, par condition expérimentale tout au long de l’expérience. Les lignes délimitent les différentes phases expérimentales : la phase d’acclimatation (S= 35 ; J+0 à J+29), la phase d’acclimatation aux changements de salinité (J+29 à J+32), la phase respiromètrique lors du changement de salinité (J+32 à J+35), la phase de récupération (S= 35 ; J+35 à J+61). Les différentes couleurs représentent quant à elles les différentes boutures suivies lors de l’expérience. \\label{growth_rate}"}
+chart(growth, formula  = g_rate_day ~ number_day %col=% id |cond) +
+  geom_point(show.legend = FALSE) +
+  geom_line(show.legend = FALSE) +
+  geom_vline(xintercept = c(29, 32,36))
+```
+
+### Photosynthèse nette
+
+### Alcalinité
+
+La mesure des variations d’alcalinité permet de calculer le taux de calcification à l’aide de la formule mentionnée dans la partie Matériels et Méthodes.
+
+Les valeurs d’alcalinité dans les différents bacs (\autoref{alc_aqua}) sont différentes en fonction de la condition ; l’alcalinité dans la condition contrôle est stable avec une valeur moyenne (n = 20) de 2680 ± 115 mmol par kilogrammes de solution tandis que les valeurs moyennes (n = 20) dans la condition hyposaline sont de 1869 ± 219 mmol.kg-1, dû à l’ajout d’eau osmosée lors du changement de salinité, et de 2842 ± 250mmol.kg-1 (n = 20) pour la condition hypersaline, accompagnée d’une diminution progressive tout au long de l’expérience. Les différences d’alcalinité étant liées aux variations de salinité, il n’est pas question de les homogénéiser entre les conditions expérimentales. Il faut cependant garder à l’esprit qu’il s’agit alors ici d’une co- variable importante, surtout en ce qui concerne la croissance du squelette. Au niveau des respiromètres (\autoref{alc_respiro}), lors des cycles fermés, l’alcalinité diminue dans les trois conditions montrant une assimilation pour la calcification du squelette calcaire. Malgré la tendance commune de diminution, les variations semblent plus importantes dans la condition contrôle que dans les conditions expérimentales. Dans ces dernières, la condition hypersaline semble être celle où les boutures assimilent le moins. Afin de mieux observer ces différences, le taux de calcification est calculé (\autoref{tab_calc}) en fonction du jour et de la nuit.
+
+```{r, fig.cap="Variation de l’alcalinité au cours de l'expérience d'hypo- et d'hypersalinité dans le bac contrôle (rouge) et dans les bacs expérimentaux (bleu et vert). Les zones grises correspondent aux périodes de nuit. \\label{alc_aqua}"}
+at %>.%
+  filter(., respi == "A0" | respi == "A1" | respi == "A2") %>.%
+  pc_plot(data = ., y = "at", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
+  geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
+  labs(y = (expression(
+    paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
+       color = "Conditions")
+```
+
+```{r, fig.cap= "Variation de l’alcalinité moyenne (± écart-type) au cours de l'expérience d'hypo- et d'hypersalinité dans les respiromètres. Les points bleus représentent le début de la phase fermée et les points rouges représentent la fin de la phase fermée. Les zones grises correspondent aux périodes de nuit. Contrôle:n=2; Hyposalin:n=3; Hypersalin:n=3 \\label{alc_respiro}"}
+at %>.%
+  filter(., condi != "NA") %>.%
+  arrange(., respi, sampledate) %>.%
+  mutate(., at_lag = lead(at),
+         period = case_when(cycle == "C4" ~ "nuit",
+                            cycle == "C7" ~ "jour",
+                            cycle == "C10" ~ "jour")) -> at1
+
+weight <- tibble(respi = paste0("R", 1:8),
+                 loc = c("A0", "A0", rep("A1", times = 3), rep("A2", times = 3)))
+
+at1 <- left_join(at1, weight, by = "respi")
+
+alk_plot(data = at1, loca = "A0",
+          rect_start = 29.83 + 0:5, rect_end = (29.83 + 0:5) + 0.5) -> a
+alk_plot(data = at1, loca = "A1",
+          rect_start = 29.83 + 0:5, rect_end = (29.83 + 0:5) + 0.5) -> b
+alk_plot(data = at1, loca = "A2",
+          rect_start = 29.83 + 0:5, rect_end = (29.83 + 0:5) + 0.5) -> c
+
+combine_charts(chartlist = list(a,b,c), common.legend = TRUE, ncol = 3)
+rm(a,b,c)
+```
+
+Le taux de calcification (\autoref{tab_calc}) de jour diminue dans les conditions expérimentales comparées au contrôle. Cette diminution est plus faible dans la condition hyposaline (1,5 fois plus bas) que dans la condition hypersaline (2,8 fois plus bas). Une ANOVA à 2 facteurs est réalisée afin de comparer les 3 conditions ainsi que la période (Jour & Nuit). Une différence significative des moyennes est obtenu au seuil alpha de 5% uniquement par la condition. Une analyse de comparaison multiple de Tukey indique uniqement qu'un stress hypersalin réduit la calcification par rapport à la condition de controle. 
+
+
+```{r}
+weight <- tibble(respi = paste0("R", 1:8),
+                 weight = c(6.224, 5.758, 5.480, 5.272,
+                            5.977, 5.209, 5.879, 4.594),
+                 loc = c("A0", "A0", rep("A1", times = 3), rep("A2", times = 3)))
+
+weight$loc <- factor(x = weight$loc, levels = c("A0", "A1", "A2"), 
+                     labels = c("Contrôle", "Hyposalin", "Hypersalin"))
+
+at %>.%
+  filter(., condi != "NA") %>.%
+  arrange(., respi, sampledate) %>.%
+  mutate(., at_lag = lead(at),
+         period = case_when(cycle == "C4" ~ "nuit",
+                            cycle == "C7" ~ "jour",
+                            cycle == "C10" ~ "jour")) %>.%
+  filter(., condi == "O") -> at_red
+
+at_red$period <- as.factor(at_red$period)
+
+left_join(at_red, weight, by = "respi") -> at_red
+
+# compute calcification rate step 2
+at_red %>%
+  mutate (calc_rate = (((at - at_lag)/2)/weight)) -> at_red
+# tab 
+at_red %>.%
+  group_by(., loc, period) %>.%
+  summarise(., mean = round(mean(calc_rate),2), sd = round(sd(calc_rate),2)) %>.%
+  unite(., "mean_sd", c(mean, sd), sep = "+/-") %>.%
+  spread(., key = period, value = mean_sd) %>.%
+  kable(., format = "latex", col.names = c("Conditions", "Taux calcification moyen (jour)", "Taux calcification moyen (nuit)"),caption = "Taux de calcification (± écart-type) pour les différentes conditions expérimentales. \\label{tab_calc}")
+
+```
+
+
+## Coloration et aspect des boutures
+
+Au cours des changements de salinités, les boutures placées dans les conditions hyposaline et hypersaline ont montré une légère décoloration (Fig. 32), passant du brun foncé à un brun plus clair, et aucune bouture n’est morte pendant l’expérience. 
+
+Lors de la phase de récupération, la coloration des boutures a également été monitorée. L’ensemble des boutures a regagné petit à petit leur coloration initiale et au terme de cette période, aucune mortalité n’est à signaler.
+
+Un autre aspect visuel monitoré, mais non photographié, est l’état des polypes des boutures. En effet, il a été remarqué que dans les conditions expérimentales, les polypes n’étaient pas totalement sortis lors d’une exposition hyposaline et complètement rétractés dans le squelette lors d’une exposition hypersaline. Dans le cas des conditions contrôles, les polypes était bien visibles et donc complètement sortis

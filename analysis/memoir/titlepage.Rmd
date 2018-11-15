@@ -1,0 +1,39 @@
+---
+output: pdf_document
+---
+
+\begin{centering}
+
+\vspace{3 cm}
+
+\includegraphics[width=4cm,height=6cm]{template/EcoNum-logo.pdf}\\[\bigskipamount]
+
+\vspace{3 cm}
+
+\Huge
+
+{\bf Réponse écophysiologique de \emph{Seriatopora hystrix} (Dana, 1846) suite à un stress hypo ou hypersalin à court terme}
+
+\Large
+
+Nadège Georges et Guyliann Engels
+
+\normalsize
+Promoteur : Philippe Grosjean
+
+\vspace{3 cm}
+
+\normalsize
+Mémoire présenté en vue de l’obtention d’un grade de Maître en Sciences Biologiques
+
+Année académique 2017-2018
+
+\vspace{3 cm}
+
+\normalsize
+Faculté des Sciences
+
+\normalsize
+Université de Mons
+
+\end{centering}

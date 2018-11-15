@@ -1,0 +1,11 @@
+---
+output: pdf_document
+---
+
+\chapter*{Remerciement}
+
+Je remercie le professeur Philippe Grosjean qui m’a accueillie dans son laboratoire afin d’effectuer ce mémoire et qui a permis la mise en oeuvre de celui-ci.
+
+Je voudrais également remercier les autres personnes du laboratoire d’Ecologie Numérique des Milieux aquatiques. Tout d’abord, je remercie Guyliann qui m’a suivie depuis le début et qui a répondu aux nombreuses questions que je pouvais avoir et qui m’a supportée tout au long de l’année dans son bureau. Je remercie Antoine, notre super technicien sans qui la mise en place de l’expérience n’aurait pas été possible. Pour finir, je remercie les autres mémorants, Thomas et Mailis, pour avoir partagé cette année.
+
+Un dernier remerciement revient à Ayrton qui m’a soutenue dans la vie quotidienne et qui a supporté mes moments de stress, mes moments de doutes et qui était toujours là dans n’importe quelle situation.

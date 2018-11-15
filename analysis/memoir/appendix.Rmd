@@ -1,0 +1,21 @@
+---
+bibliography: ../bibliography/coral_salinity_biblio.bib
+output:
+  word_document: default
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: template/preamble-latex-fr.tex
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+
+\appendix
+
+# Test
+
+
+## test1
+
+TODO

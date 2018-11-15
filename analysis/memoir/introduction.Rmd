@@ -1,0 +1,51 @@
+---
+bibliography: ../bibliography/coral_salinity_biblio.bib
+output:
+  word_document: default
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: template/preamble-latex-fr.tex
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+# Introduction
+
+Depuis plusieurs années, les changements climatiques et les effets qu’ils engendrent sur les écosystèmes intéressent fortement les scientifiques. Ces changements climatiques provoquent une multitude de bouleversements, notamment une hausse des températures, qui est un des sujets d’étude principal, mais cette hausse a bien d’autres conséquences comme l’augmentation de l’intensité et de la puissance des cyclones, ouragans, typhons, ... [@Webster2005] qui peuvent provoquer d’énormes dégâts sur les écosystèmes marins [@Scoffin1993]. Parmi les effets de ces événements climatiques extrêmes, l’apport massif d’eau douce par les pluies torrentielles peut provoquer, localement, des diminutions importantes de la salinité [@Jokiel1993].
+
+De plus, l’impact anthropique génère également des dérèglements, tels que l’augmentation des gaz à effet de serre provoquant une baisse du pH marin, le déversement de polluants, l’impact direct sur la structure des écosystèmes dû par exemple à la pêche ou au tourisme et bien d’autres phénomènes encore [@Barange2010; @Cesar2003]. Ainsi, le développement d’usines de désalinisation de l’eau de mer pour produire de l’eau potable dans les régions arides tel qu’autour de la Mer Rouge, peut également provoquer une augmentation locale de la salinité [@Roberts2010] .
+
+Dans un contexte de changements globaux et significatifs des habitats marins, la question principale concernant le vivant est de savoir s’il est capable de les supporter (résistance ou résilience), ou si nous allons assister à un remaniement complet de biocénose sur terre. Dans le cadre de ce travail, nous nous intéresserons plus particulièrement aux capacités à supporter des changements de salinité d’un scléractiniaire hermatypique : *Seriatopora hystrix* (Dana, 1846).
+
+## Les écosystèmes coralliens
+
+### Généralités du milieu
+
+Apparu il y a 65 millions d’années , les récifs coralliens sont des écosystèmes extrêmement riches et considérés comme les plus anciens de notre planète [@McIntyre2010, @Veron2000]. Ils recouvrent une superficie d’environ 250 000 km2 et sont très souvent comparés à la forêt tropicale avec laquelle ils partagent de nombreuses caractéristiques [@Richmond2011, @Rosenberg2007].
+
+La richesse que renferme ces écosystèmes est énorme. En effet, ils possèdent la plus grande diversité par unité de surface ainsi que la plus grande diversité d’habitat formé par les milliers d’espèces de coraux qui les peuplent [@McIntyre2010]. Ces écosystèmes se sont formés grâce à l’association particulière des Scléractiniaires avec des algues photosynthétiques du genre Symbiodinium, les zooxanthelles, menant à une symbiose mutualiste permettant la prolifération de ces coraux symbiotiques dans ces environnements éventuellement très oligotrophes.
+
+Cet écosystème marin, bien que fortement diversifié, ne se trouve que dans une zone délimitée du globe (\autoref{distri_coral}). Les récifs coralliens se développent dans des régions caractérisées par des conditions précises [@Burke2011] telles qu’une oligotrophie de l’eau, une forte irradiance, une température de l’eau variant entre 18°C et 34°C toute l’année et dont les variations sont faibles, et une turbidité de l’eau peu présente afin de permettre le passage de la lumière jusqu’au récif. Ces conditions très précises ne se trouvent qu’entre les tropiques, soit entre 30°N et 30°S. Il est à noter que certains récifs se forment dans des conditions toutes autres, tel que démontré récemment en Amazonie où un récif a été découvert à plus de 200m de profondeur et appelé « The Great Amazon Reef System [@Francini2018] ou au Japon où la température chute régulièrement entre 11-14°C [@Veron2000].
+
+![Schéma représentant la distribution des récifs coralliens (en rouge) dans les océans du monde. Les zones en bleu représentent les récifs possédant des coraux en symbioses avec des zooxaanthelles [@Veron2000]. \label{distri_coral}](images/distri_coral.png)
+
+Les récifs intertropicaux sont construits par des scléractinaires dits hermatypiques (décrits dans la \autoref{scleractiniaire}). Trois grands types de récifs existent sur Terre  et dérivent les uns des autres \autoref{recif_type} : les récifs frangeants, les récifs barrière et les atolls [@Veron2000, @Cesar2003]. Les récifs frangeants sont des récifs se formant sur les bords du littoral et se trouvent par conséquent proches des côtes où ils forment un platier de faible profondeur appelé « le lagon ». Ce type de récifs est retrouvé, par exemple, autour de l’île de la Réunion. Le récif barrière quant à lui forme une structure plus éloignée des côtes comme observée au niveau de la Grande Barrière de Corail en Australie et provient d’un enfoncement progressif des terres. Pour finir, les atolls sont des structures retrouvées en pleine mer et sont de forme circulaire renfermant le lagon. Ce type de récifs se forme par enfoncement et disparition de l’île autour de laquelle il s’est formé. Les atolls peuvent être observés, par exemple, aux Maldives.
+
+![Schéma représentant la formation des différents types de récifs. L'image représente un récif frangeant (à gauche), un récif barrière ( au centre) et un atoll (à droite) et montre le lien entre la formation de ces récifs [@Veron2000]\label{recif_type}](images/recif_type.png)
+
+
+
+## Scléractiniaires hermatypiques {#scleractiniaire}
+
+### Taxonomie
+
+La définition du mot « corail » est très ambiguë et peut être plus ou moins spécifique en fonction du contexte. Dans le cadre de ce mémoire, le terme corail sera employé pour décrire les scléractiniaires hermatypiques ou dits « coraux bâtisseurs de récifs ».
+Les Scléractiniaires sont des animaux classés dans l’embranchement des Cnidaires, au même titre que les méduses et les anémones, et se divisent en 4 classes : les Anthozoa, les Hydrozoa, les Cubozoa et les Scyphozoa [@Hidaka2016)]. La plupart des coraux hermatypiques se retrouvent principalement dans la classe des Anthozoa et plus précisément dans l’ordre des Scleractinia appartenant à la sous-classe des Hexocorallia. Ces espèces se caractérisent, comme leur nom l’indique, par une symétrie d’ordre six pouvant être visible au nombre de tentacules que possède chaque polype ou au nombre de mésentères présents dans le coelenteron.
+Le corail regroupe des scléractiniaires dits « hermatypiques » caractérisés par cette symbiose mutualiste avec des dinoflagellés du genre Symbiodinium [@kuhl1995,@Karako2002]. La présence de ces algues photosynthétiques leur permet la production d’une grande quantité de squelettes sous forme de carbonate de calcium ($CaCO_3$) et permet de les qualifier de bâtisseurs de corail. Cependant, il est bon de préciser que tous les scléractiniaires zooxanthellates ne rentrent pas forcément dans cette catégorie.
+
+### *Seriatopora hystrix* (Dana, 1846)
+
+L’espèce étudiée dans le cadre de ce travail est Seriatopora hystrix Dana, 1846. Elle fait partie de la famille de Pocilloporidae et se retrouve dans des récifs possédant une distribution Indo-Pacifique généralement de faible profondeur (platier intertidaux) comme le montre la  \autoref{shystrix_map} [@Veron2000].
+
+![Carte représentant la distribution de Seriatopora hystrix dans le monde [@Veron2000] \label{shystrix_map}](images/shystrix_map.png).

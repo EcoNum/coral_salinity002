@@ -1,0 +1,21 @@
+---
+bibliography: "../bibliography/coral_salinity_biblio.bib"
+output:
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: template/preamble-latex-fr.tex
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+# Discussion
+
+test de citation \ref{salinity}
+
+
+Exemple d'équation avec référence, voir éq. \ref{eq:1}:
+
+\begin{equation} \label{eq:1}
+  \mu=\sum_{i=1}^n{\frac{x_i}{n}}
+\end{equation} 

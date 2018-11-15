@@ -1,0 +1,59 @@
+---
+bibliography: "../bibliography/coral_salinity_biblio.bib"
+documentclass: report
+output:
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: template/preamble-latex-fr.tex
+    latex_engine: xelatex
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+
+```{r child = 'titlepage.Rmd'}
+```
+
+\newpage
+
+```{r child = 'acknowledgements.Rmd'}
+```
+
+```{r child = 'abstract_fr.Rmd'}
+```
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+
+```{r child = 'introduction.Rmd'}
+```
+
+```{r child = 'aim.Rmd'}
+```
+
+```{r child = 'materiels_methods.Rmd'}
+```
+
+```{r child = 'results.Rmd'}
+```
+
+```{r child = 'discussion.Rmd'}
+
+```
+
+```{r child = 'conclusion.Rmd'}
+```
+
+```{r child = 'appendix.Rmd'}
+```
+
+# Bibliographie 
+

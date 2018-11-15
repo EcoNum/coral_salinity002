@@ -1,0 +1,11 @@
+---
+output: pdf_document
+---
+
+# But
+
+Dans ce travail, il est question d’étudier l’impact des changements de salinité sur l’espèce de scléractiniaire hermatypique Seriatopora hystrix (Dana, 1846) à court-terme. En effet, les changements de ce paramètre sont assez peu étudiés, alors que ce type de modifications environnementales sont fréquentes dans le milieu naturel.
+
+Nous simulerons, de manière expérimentale, les variations de salinité observées à l’échelle locale telles qu’elles apparaissent fréquemment dans certaines parties du monde dues à l’augmentation des tempêtes tropicales ou au taux de précipitations menant à l’augmentation du ruissellement ayant un impact sur les récifs proches des embouchures. De même, nous simulerons expérimentalement le phénomène inverse dû, par exemple, à l’installation d’usines de dessalement sur les côtes de pays où la disponibilité en eau douce est faible. Nous nous focaliserons sur les effets sur l’écophysiologique du corail, qui sont encore mal connus.
+
+Afin d’émettre les premières hypothèses sur l’impact de stress salins, des paramètres vitaux tels que la photosynthèse seront étudiés à l’aide de chambres respirométriques. Les effets de variation de salinité sur la croissance, l’assimilation des nutriments et le taux de calcification seront également quantifiés.

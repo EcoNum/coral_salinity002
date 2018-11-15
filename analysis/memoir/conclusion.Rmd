@@ -1,0 +1,18 @@
+---
+output: pdf_document
+---
+
+# Conclusion
+
+La salinité est une variable environnementale importante pour l’holobionte corallien. Cette étude a permis de montrer que la variation de salinité, même faible et sur une courte durée, impacte négativement l’espèce *S. hystrix*. Toutefois, cette espèce de corail hermatypique fait preuve d’une forte résilience dans ces conditions puisqu’au terme de l’expérience aucune mortalité n’a été observée et tous les individus ont récupéré (y compris leur coloration) en l’espace d’un mois.
+
+Cependant, les études menées sur d’autres espèces de corail montrent une sensibilité ou résistance différente quant aux variations de salinité dépendant de facteurs tels que (1) l’amplitude de la variation saline, (2) la durée de cette variation, (3) la sensibilité de l’espèce ainsi que le clade de zooxanthelles présent dans les tissus coralliens.
+Par conséquent, les résultats obtenus au cours de ce mémoire montrent une influence non négligeable d’un choc hypo- ou hypersalin mais ne sont pas applicables à toutes les espèces formant les récifs.
+
+Ils donnent un premier aperçu et permettent l’élaboration de pistes quant à une meilleure compréhension des effets des chocs salins comme notamment par :
+
+- 1. L’étudeducladedezooxanthellesprésentdanslestissuscoralliensafindedéterminer si un clade particulier présente une plus grande résistance à l’instar du clade D permettant une meilleure résistance aux stress thermiques
+- 2.  Uneétudehistologiquedestissuspermettantdemettreenévidenceunchangement de volume cellulaire ou des dégâts aux niveau tissulaire
+- 3. La comparaison entre espèces face à des conditions similaires afin de mettre en évidence les mécanismes de résistance.
+- 4. L’étudedeschocshypersalins,moinsdocumentésqueleschocshyposalins,quipeuvent être notamment associés aux processus de dessalement dont l’utilisation dans les pays arides ne cesse d’augmenter à l’heure actuelle.
+- 5. Un timing différent, calqué sur différents scénarios effectivement observés dans le milieu naturel, et donc également avec des épisodes de désalure plus longs.
