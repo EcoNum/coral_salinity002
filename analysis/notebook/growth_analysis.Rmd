@@ -1,0 +1,168 @@
+---
+title: "Analyse de la croissance"
+output: 
+  html_notebook: 
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+---
+
+
+
+```{r setup}
+SciViews::R
+#import data
+growth <- read("../../data/growth.rds")
+# function ----
+source(file = "../../R/function.R")
+```
+
+# Visualisation
+
+Un premier graphique montre que la croissance en hypo et hyper salin semble avoir été affecté par le stress. Le stress hypersalin semble affecter plus fortement la croissance des boutures. 
+
+```{r fig.cap="Variation du taux de croissance (%/j), calculé entre chaque point de mesure du poids immergé, par condition expérimentale tout au long de l’expérience. Les lignes délimitent les différentes phases expérimentales : la phase d’acclimatation (S= 35 ; J+0 à J+29), la phase d’acclimatation aux changements de salinité (J+29 à J+32), la phase respiromètrique lors du changement de salinité (J+32 à J+35), la phase de récupération (S= 35 ; J+35 à J+61). Les différentes couleurs représentent quant à elles les différentes boutures suivies lors de l’expérience. \\label{growth_rate}"}
+chart(growth, formula  = g_rate_day ~ number_day %col=% id |cond) +
+  geom_point(show.legend = FALSE) +
+  geom_line(show.legend = FALSE) +
+  geom_vline(xintercept = c(29, 32,36))
+```
+
+Ce second graphique va moyenner la croissance en fonction de la condition.
+
+```{r}
+chart(data = growth, formula  = g_rate_day ~ number_day |cond) +
+  stat_summary(geom = "point", fun.y = "mean") +
+  stat_summary(geom = "line", fun.y = "mean") +
+  stat_summary(geom = "errorbar", width = 0.1,
+    fun.data = "mean_sdl")
+```
+
+Ce premier tableau met en évidence qu'il n'y pas eu le même nombre d'individus monitoré entre les 3 conditions.
+
+```{r}
+growth %>.%
+  group_by(., cond) %>.%
+  summarise(., mean = mean(g_rate_day, na.rm = TRUE), sd = sd(g_rate_day, na.rm = TRUE), count = sum(!is.na(g_rate_day)))
+```
+Un second tableau tenant compte cette fois des trois phases est réalisé
+```{r}
+(growth %>.%
+  group_by(., cond, phase) %>.%
+  summarise(., mean = round(mean(g_rate_day, na.rm = TRUE), digits = 3), sd = round(sd(g_rate_day, na.rm = TRUE), digits = 3), count = sum(!is.na(g_rate_day))) %>.%
+  ungroup(.) -> test)
+```
+
+```{r}
+test %>.%
+  select(., -count) %>.%
+  unite(., "mean_sd", c(mean, sd), sep = " +/- ") %>.%
+  spread(., key = phase, value = mean_sd) 
+```
+
+# Analyse statistique 
+
+Une analyse via une série spatio-temporelle n'est pas utilisable étant donné le peu de nombre de point de mesure que nous avons. Une anova à mesure répétée est une solution envisageable. Il faut cependant que l'homoscédasticité soit respecté. 
+
+```{r}
+bartlett.test(data = growth, g_rate_day ~ cond)
+bartlett.test(data = growth, log(g_rate_day) ~ cond)
+bartlett.test(data = growth, exp(g_rate_day) ~ cond)
+bartlett.test(data = growth, exp(exp(exp(g_rate_day))) ~ cond)
+bartlett.test(data = growth, (1/exp(g_rate_day)) ~ cond)
+```
+
+```{r}
+anova. <- aov(data = growth, g_rate_day ~ cond*phase + Error(number_day/cond))
+summary(anova.)
+```
+
+Il y a hétéroscédasticité des variances même lors de transformations des variables. On tente donc un test non paramétrique 
+
+## modèle linéaire sur la condition de controle 
+
+Une approche peut être de savoir si la croissance du controle varie au cours du temps
+
+```{r}
+growth %>.%
+  filter(., cond == "control") %>.%
+  filter(., ! is.na(g_rate_day)) %>.%
+  mutate(., g_rate_exp = exp(g_rate_day))-> gr
+
+bartlett.test(data = gr, exp(g_rate_day) ~ number_day)
+bartlett.test(data = gr, exp(g_rate_day) ~ phase)
+
+summary(gr1 <- lm(data = gr, g_rate_exp ~ number_day))
+gr1 %>.% (function (lm, model = lm[["model"]], vars = names(model))
+  chart(model, aes_string(x = vars[2], y = vars[1])) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ x))(.)
+
+anova(lm. <- lm(data = gr, g_rate_day ~ number_day * phase))
+anova(lm. <- lm(data = gr, g_rate_day ~ number_day * phase))
+summary(lm. <- lm(data = growth, g_rate_day ~ number_day * phase *cond))
+```
+
+On observe qu'uniquement l'ordonnée à l'origine est significatif.
+
+## Utilisation de test paramétrique à chaque pas de temps 
+
+### J-25 à J-29
+
+```{r}
+growth %>.%
+  filter(. , number_day == 25) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+growth %>.%
+  filter(. , number_day == 25) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+growth %>.%
+  filter(. , number_day == 29) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+```
+
+### J-32
+
+```{r}
+growth %>.%
+  filter(. , number_day == 32) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+
+summary(kw_comp. <- nparcomp::nparcomp(data = filter(growth , number_day == 32), g_rate_day ~ cond))
+plot(kw_comp.)
+
+
+
+growth %>.%
+  filter(. , number_day == 35) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+summary(kw_comp. <- nparcomp::nparcomp(data = filter(growth , number_day == 35), g_rate_day ~ cond))
+plot(kw_comp.)
+growth %>.%
+  filter(. , number_day == 40) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+summary(kw_comp. <- nparcomp::nparcomp(data = filter(growth , number_day == 40), g_rate_day ~ cond))
+plot(kw_comp.)
+
+growth %>.%
+  filter(. , number_day == 47) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+summary(kw_comp. <- nparcomp::nparcomp(data = filter(growth , number_day == 47), g_rate_day ~ cond))
+plot(kw_comp.)
+
+growth %>.%
+  filter(. , number_day == 54) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+summary(kw_comp. <- nparcomp::nparcomp(data = filter(growth , number_day == 54), g_rate_day ~ cond))
+plot(kw_comp.)
+growth %>.%
+  filter(. , number_day == 61) %>.%
+  kruskal.test(data = ., g_rate_day ~ cond)
+
+summary(kw_comp. <- nparcomp::nparcomp(data = filter(growth , number_day == 61), g_rate_day ~ cond))
+plot(kw_comp.)
+
+```
+
+### J-35
+

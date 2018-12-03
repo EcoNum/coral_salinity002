@@ -11,3 +11,7 @@ growth %>.%
   filter(., number_day == 29) %>.%
   group_by(., phase) %>.%
   summarise(., mean = mean(g_rate_day, na.rm = TRUE), sd = sd(g_rate_day, na.rm = TRUE), count = n())
+
+library(seal.econum)
+?skeleton_weight(
+)

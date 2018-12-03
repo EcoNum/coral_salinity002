@@ -49,3 +49,30 @@ alk_plot <- function(data, loca, rect_start, rect_end){
 
 # alk_plot(data = at1, loca = "A1",
 #          rect_start = 29.83 + 0:5, rect_end = (29.83 + 0:5) + 0.5)
+
+
+# correct_monitoring -----
+
+correct_monitoring <- function(dates, values, calib.dates, calib.values, extrapolate = FALSE) {
+if (isTRUE(extrapolate)) rule <- 2 else rule <- 1
+# Approximate the values in the series to the manual dates
+series.values <- approx(dates, values, xout = calib.dates, rule = rule)$y
+# Calculate deltas between series measurements and manual values
+deltas <- calib.values - series.values
+corr <- data.frame(dates = calib.dates, values = calib.values,
+                   measures = series.values, deltas = deltas)
+# Interpolate linearly these deltas
+all_deltas <- approx(calib.dates, deltas, xout = dates, rule = rule)$y
+# Apply the correction
+res <- values + all_deltas
+structure(res, correction = corr, dates = dates, deltas = all_deltas, class = c("corrected", "numeric"))
+}
+
+plot.corrected <- function(x, y, ...) {
+  if (missing(y)) y <- x - attr(x, "deltas")
+  dates <- attr(x, "dates")
+  range <- range(x, y, na.rm = TRUE)
+  plot(dates, y, type = "l", col = "gray", ylim = range)
+  lines(dates, x, type = "l", col = "red")
+  points(attr(x, "correction")$dates, attr(x, "correction")$values, col = "red")
+}
