@@ -166,3 +166,55 @@ plot(kw_comp.)
 
 ### J-35
 
+## Test de Levene et Bartlett - homoscédasticité interaction ?
+
+```{r}
+car::leveneTest(data =growth, exp(g_rate_day) ~ cond)
+car::leveneTest(data =growth, exp(g_rate_day) ~ phase)
+car::leveneTest(data =growth, exp(g_rate_day) ~ as.factor(number_day))
+
+car::leveneTest(data = growth, exp(g_rate_day) ~ cond*phase)
+car::leveneTest(data = growth, exp(g_rate_day) ~ cond*as.factor(number_day))
+
+bartlett.test(data = growth, exp(g_rate_day) ~ interaction(cond, phase))
+bartlett.test(data = growth, exp(g_rate_day) ~ interaction(cond, as.factor(number_day)))
+```
+
+Il y a hétéroscédasticité des variances meme en considérant les interactions.
+
+## Test de Scheirer-Ray-Hare (test Post-hoc : test de Dunn)
+
+Equivalent non-paramétrique de l’ANOVA à deux facteurs avec répétitions
+
+```{r}
+# cond * number_day
+rcompanion::scheirerRayHare(data = growth, formula = g_rate_day ~ cond * number_day)
+## Post-hoc cond
+FSA::dunnTest(growth$g_rate_day, growth$cond, method = "bh")
+dunn.test::dunn.test(growth$g_rate_day, growth$cond, method="bh")
+## Post-hoc number_day
+FSA::dunnTest(growth$g_rate_day, as.factor(growth$number_day), method = "bh")
+dunn.test::dunn.test(growth$g_rate_day, growth$number_day, method="bh", wrap = TRUE )
+
+## Post-hoc interaction
+FSA::dunnTest(growth$g_rate_day, interaction(growth$cond, growth$number_day), method = "bh") %>.%
+  filter(.$res, P.adj < 0.05) %>.%
+  arrange(., P.adj)
+
+FSA::dunnTest(growth$g_rate_day, interaction(growth$cond, growth$number_day), method = "bonferroni") %>.%
+  filter(.$res, P.adj < 0.05) %>.%
+  arrange(., P.adj)
+dunn.test::dunn.test(growth$g_rate_day, interaction(growth$cond, growth$number_day), method = "bh", table = FALSE, list = TRUE)
+
+# cond * phase
+rcompanion::scheirerRayHare(data = growth, formula = g_rate_day ~ cond * phase)
+## Post-hoc phase
+dunn.test::dunn.test(growth$g_rate_day, growth$phase, method="bh")
+
+## Post-hoc interaction
+FSA::dunnTest(growth$g_rate_day, interaction(growth$cond, growth$phase), method = "bh") %>.%
+  filter(.$res, P.adj < 0.05) %>.%
+  arrange(., P.adj)
+pairwise.wilcox.test(growth$g_rate_day, interaction(growth$cond, growth$phase), method = "bh")
+```
+
