@@ -4,19 +4,166 @@ output: html_notebook
 ---
 
 ```{r setup}
+# packages
 SciViews::R
 source("../../R/function.R")
+
+# dataset
 at <-  read("../../data/alcalinity.rds")
-at_aqua <- filter(at, respi %in% c("A0", "A1", "A2"))
+nubbins <- read("../../data/nubbins.rds")
+
+growth <- read("../../data/growth.rds") %>.%
+  filter(., number_day == 32) %>.%
+  select(., localisation, id, skeleton_weight)
+
+nubbins <- left_join(nubbins, growth, by = c("localisation", "id"))
+
+at$localisation[at$respi %in% c("A0", "R1", "R2")] <- "control"
+at$localisation[at$respi %in% c("A1", "R3", "R4", "R5")] <- "hyposalin"
+at$localisation[at$respi %in% c("A2", "R6", "R7", "R8")] <- "hypersalin"
+
+# data subset
+at %>.%
+  filter(.,  !is.na(condi)) -> at_respi
 ```
 
+Ce premier graphique permet de montrer que l'alcalnité est fortement modifiée du changement de salinité. 
 
 ```{r}
-pc_plot(data = at_aqua, y = "at", x = "number_day", factor = "respi",
+  pc_plot(data = at, y = "at", x = "number_day", factor = "localisation",
+          rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
+  geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
+  labs(y = (expression(
+    paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
+       color = "Conditions") +
+  facet_wrap(~ localisation)
+```
+
+Si l'on s'intéresse uniquement au conditon sans l'expérience de respirométrie, on obtient le graphique ci-dessous.
+
+```{r}
+at%>.%
+  filter(., is.na(condi)) %>.%
+  pc_plot(data = ., y = "at", x = "number_day", factor = "localisation",
           rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
   geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
   labs(y = (expression(
     paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
        color = "Conditions")
+
+```
+
+Par condition , on obtient les graphiques suivants
+
+```{r}
+at%>.%
+  filter(., localisation == "control") %>.%
+  pc_plot(data = ., y = "at", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
+  geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
+  labs(y = (expression(
+    paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
+       color = "Conditions")
+```
+
+
+```{r}
+at%>.%
+  filter(., localisation == "hyposalin") %>.%
+  pc_plot(data = ., y = "at", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
+  geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
+  labs(y = (expression(
+    paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
+       color = "Conditions")
+```
+
+
+```{r}
+at%>.%
+  filter(., localisation == "hypersalin") %>.%
+  pc_plot(data = ., y = "at", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
+  geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
+  labs(y = (expression(
+    paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
+       color = "Conditions")
+```
+
+
+
+
+Calculons l'absorptions :
+
+- le respiromètre 8 est truffé d'erreur d'encodage et n'est donc aucunement utilisable.
+
+```{r}
+at_respi %>.%
+  group_by(., condi, localisation) %>.%
+  summarise(., mean = mean(at), sd = sd(at), count = sum(!is.na(at)))
+
+chart(at_respi, at ~ number_day %col=% condi | respi) +
+  geom_point()
+```
+
+
+```{r}
+at_respi %>.%
+  arrange(., sampledate) %>.%
+  mutate(., nb_round = number_day %/%1) %>.%
+  filter(., respi != "R8") -> at_respi
+ 
+chart(at_respi, at ~ number_day %col=% condi | respi) +
+  geom_point()
+
+```
+
+Calculons maintenant l'assimilation
+
+```{r}
+at_respi %>.%
+  arrange(., sampledate) %>.%
+  group_by(., respi) %>.%
+  mutate(., at_lead = lead(at), 
+         at_diff = at-at_lead) %>.%
+  filter(., condi != "F") -> at_respi
+
+chart(at_respi, at_diff ~ number_day  | localisation) +
+  geom_point()
+
+```
+
+```{r}
+nubbins$respi <- nubbins$respiro
+at_respi <- left_join(at_respi, nubbins[ , -1], by = "respi")
+
+at_respi %>.%
+  mutate(., calc_rate =  (at_diff/2)/skeleton_weight) -> at_respi
+
+chart(at_respi, calc_rate ~ number_day  | localisation) +
+  geom_point()
+
+
+```
+
+
+
+```{r}
+at_respi$period[at_respi$cycle %in% c("C7", "C10")] <- "jour"
+at_respi$period[at_respi$cycle  %in% c("C4")] <- "nuit"
+
+chart(at_respi, calc_rate ~ number_day %col=% period | localisation) +
+  geom_point()
+```
+
+
+
+```{r}
+at_respi %>.%
+  group_by(., localisation, period) %>.%
+  summarise(., mean = round(mean(calc_rate),2), sd = round(sd(calc_rate),2)) %>.%
+  unite(., "mean_sd", c(mean, sd), sep = "+/-") %>.%
+  spread(., key = period, value = mean_sd) %>.%
+  kable(.,  col.names = c("Conditions", "Taux calcification moyen (jour)", "Taux calcification moyen (nuit)"),caption = "Taux de calcification (± écart-type) pour les différentes conditions expérimentales. \\label{tab_calc}")
 ```
 

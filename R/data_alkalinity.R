@@ -24,6 +24,8 @@ for(f in all_data[-1]){
 
 rm (EcoNumData_AT, all_data, direct, f)
 
+AT$sample[AT$sample == "R8_C7-O"] <- "R8-C7-O"
+AT$sample[AT$sample == "R7-C7_F"] <- "R7-C7-F"
 
 AT %>.%
   separate(., sample, into = c("respi", "cycle", "condi"),
@@ -38,17 +40,19 @@ chart(AT, mapping = aes( y= AT__ui, x= sampledate, color = respi)) +
 
 # correction ----
 
-AT[139,5] <- "C7"
-AT[139,6] <- "F"
-AT[154,4] <- "R8"
-AT[154,5] <- "C7"
-AT[154,6] <- "O"
+AT[154,4] <- "R8" #?
+AT[154,5] <- "C7" #?
+AT[154,6] <- "O" #?
+
+# modif date année 2015 -> 2018
+
 AT[34,7] <- "2018-05-15 13:00:00"
 AT[70,7] <- "2018-05-15 13:00:00"
 AT[93,7] <- "2018-05-15 13:00:00"
-AT[117,7] <- "2018-05-15 13:00:00"
-AT[154,7] <- "2018-05-15 13:00:00"
 AT[105,7] <- "2018-05-15 13:00:00"
+AT[117,7] <- "2018-05-15 13:00:00"
+AT[143,7] <- "2018-05-15 13:00:00"
+AT[154,7] <- "2018-05-15 13:00:00"
 AT[83,7] <- "2018-05-16 13:00:00"
 AT[142,7] <- "2018-05-16 13:00:00"
 AT[69,7] <- "2018-05-16 14:00:00"
@@ -59,6 +63,7 @@ AT[128,7] <- "2018-05-16 14:00:00"
 AT[140,7] <- "2018-05-16 14:00:00"
 AT[153,7] <- "2018-05-16 14:00:00"
 AT[101,7] <- "2018-05-16 07:00:00"
+
 AT[137,1] <- 2730.902
 AT[135,1] <-2718.144
 AT[125,1] <-2724.825
@@ -99,18 +104,9 @@ at <-labelise(at,self = FALSE,
                            sampledate = "Date",
                            number_day = "Nombre de jour"
               ),
-              units = list(at = "mmol*kg^-1",
-                           salinity = NA,
-                           sample = NA,
-                           respi = NA,
-                           cycle = NA,
-                           condi = NA,
-                           sampledate = NA,
-                           number_day = NA),
+              units = list(at = "mmol*kg^-1"),
               as_labelled = TRUE)
 
 
 data.io::write(at, file = "data/alcalinity.rds", type = "rds", compress = "xz")
 
-
-write(pc, file = "data/physico.rds", type = "rds", compress = "xz")
