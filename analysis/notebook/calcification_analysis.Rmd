@@ -2,3 +2,21 @@
 title: " Taux de calcification"
 output: html_notebook
 ---
+
+```{r setup}
+SciViews::R
+source("../../R/function.R")
+at <-  read("../../data/alcalinity.rds")
+at_aqua <- filter(at, respi %in% c("A0", "A1", "A2"))
+```
+
+
+```{r}
+pc_plot(data = at_aqua, y = "at", x = "number_day", factor = "respi",
+          rect_start = 29.83 + 0:6, rect_end = (29.83 + 0:6) + 0.5) +
+  geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
+  labs(y = (expression(
+    paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
+       color = "Conditions")
+```
+

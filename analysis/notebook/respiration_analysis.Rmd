@@ -3,3 +3,66 @@ title: "Taux de respiration"
 output: html_notebook
 ---
 
+```{r}
+SciViews::R
+respi <- read("../../data/respiration.rds")
+nubbins <- read("../../data/nubbins.rds")
+
+respi <- left_join(respi, nubbins, by ="respiro")
+```
+
+Un premier graphique montre les résultats obtenu, nous observons donc l'évolution du taux de respiration au cours du temps.
+
+```{r}
+chart(respi, formula = respi ~ time1 %col=% respiro) +
+  geom_point( ) 
+```
+
+Etant donné qu'il s'agit des mêmes boutures, nuos devons les considérer comme des pseudo-réplicats.
+
+```{r}
+chart(data = respi, respi ~ cycle %col=% respiro | condition )  +
+  stat_summary(geom = "point", fun.y = "mean", position = position_dodge(0.4)) +
+  stat_summary(geom = "errorbar", width = 0.1, position = position_dodge(0.4),
+    fun.data = "mean_sdl", fun.args = list(mult = 1))
+```
+
+
+Lorsque les pseudo réplicats sont moyennés, on obtient un graphique similaire à l'analyse proposée dans le mémoire de Nadège.
+
+```{r}
+respi %>.%
+  group_by(., respiro, cycle, condition) %>.%
+  summarise(., mean = mean(respi)) %>.%
+  chart(., mean ~ cycle %col=% respiro | condition) +
+  geom_point(, show.legend = FALSE) +
+  geom_hline(linetype = "dashed", yintercept = 0) +
+  scale_y_continuous(limits = c(-0.35,0.35))
+```
+
+Malgré le faible nombre de point, une analyse statistique est proposé :
+
+```{r}
+respi %>.%
+  group_by(., respiro, cycle, condition) %>.%
+  summarise(., mean = mean(respi)) -> data_mean
+#as.factor()
+data_mean$cycle <- as.factor(data_mean$cycle)
+data_mean$condition <- as.factor(data_mean$condition)
+```
+
+- Un test de bartlett montre qu'il y a homoscédasticté.
+
+```{r}
+bartlett.test(data = data_mean, mean ~  interaction(cycle, condition))
+
+
+anova(anova. <- lm(data = data_mean, mean ~ cycle * condition))
+
+summary(anovaComp. <- confint(multcomp::glht(anova.,
+  linfct = multcomp::mcp( condition = "Tukey", cycle = "Tukey")))) # Add a second factor if you want
+.oma <- par(oma = c(0, 5.1, 0, 0)); plot(anovaComp.); par(.oma); rm(.oma)
+
+```
+
+Il y a donc bien différence significative entre les traitements et le controles.
