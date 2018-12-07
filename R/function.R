@@ -114,3 +114,42 @@ respirometry <- function(data, series, pos, n = 1, mass = 1, vol.respi = 1.3,
                                 vol.respi = vol.respi, reg = reg)
   res
 }
+
+# model predict by phG
+
+predict_fun <- function(model, ...)
+  UseMethod("predict_fun")
+
+predict_fun.default <- predict_fun.lm <- function(model, ...) {
+  xname <- attr(terms(pur_lin), "term.labels")
+  if (length(xname) != 1)
+    stop("You must have one predictor variable (x) only in the model")
+  function(x)
+    predict(model, newdata = set_names(list(x), xname))
+}
+
+predict_fun.nls <- function(model, ...) {
+  xname <- names(model$dataClasses)
+  if (length(xname) != 1)
+    stop("You must have one predictor variable (x) only in the model")
+  function(x)
+    predict(model, newdata = set_names(list(x), xname))
+}
+#
+# pur <- Puromycin[ Puromycin$state == "treated", ]
+# pur_micmen <- nls(data = pur, rate ~ SSmicmen(conc, Vm, K))
+# summary(pur_micmen)
+# pur_lin <- lm(data = pur, rate ~ conc)
+# summary(pur_lin)
+# pur_2 <- lm(data = pur, rate ~ conc + I(conc^2))
+# summary(pur_2)
+# pur_3 <- lm(data = pur, rate ~ conc + I(conc^2) + I(conc^3))
+# summary(pur_3)
+#
+# chart(data = pur, rate ~ conc) +
+#   stat_function(fun = predict_fun(pur_micmen), aes(col = "Michaelis-Menten")) +
+#   stat_function(fun = predict_fun(pur_lin), aes(col = "Linéaire")) +
+#   stat_function(fun = predict_fun(pur_2), aes(col = "Quadrique")) +
+#   stat_function(fun = predict_fun(pur_3), aes(col = "Conique")) +
+#   geom_point() +
+#   labs(col = "Modèle")

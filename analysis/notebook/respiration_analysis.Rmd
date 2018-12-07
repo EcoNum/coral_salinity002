@@ -56,13 +56,19 @@ data_mean$condition <- as.factor(data_mean$condition)
 ```{r}
 bartlett.test(data = data_mean, mean ~  interaction(cycle, condition))
 
+test <- filter(data_mean, cycle != "N")
 
-anova(anova. <- lm(data = data_mean, mean ~ cycle * condition))
-
+anova(anova. <- lm(data = test, mean ~ condition))
 summary(anovaComp. <- confint(multcomp::glht(anova.,
-  linfct = multcomp::mcp( condition = "Tukey", cycle = "Tukey")))) # Add a second factor if you want
+  linfct = multcomp::mcp( condition = "Tukey")))) # Add a second factor if you want
 .oma <- par(oma = c(0, 5.1, 0, 0)); plot(anovaComp.); par(.oma); rm(.oma)
 
+test <- filter(data_mean, cycle == "N")
+
+anova(anova. <- lm(data = test, mean ~ condition))
+summary(anovaComp. <- confint(multcomp::glht(anova.,
+  linfct = multcomp::mcp( condition = "Tukey")))) # Add a second factor if you want
+.oma <- par(oma = c(0, 5.1, 0, 0)); plot(anovaComp.); par(.oma); rm(.oma)
 ```
 
 Il y a donc bien différence significative entre les traitements et le controles.

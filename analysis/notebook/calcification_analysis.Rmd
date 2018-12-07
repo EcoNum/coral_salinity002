@@ -6,6 +6,7 @@ output: html_notebook
 ```{r setup}
 # packages
 SciViews::R
+library(knitr)
 source("../../R/function.R")
 
 # dataset
@@ -27,6 +28,8 @@ at %>.%
   filter(.,  !is.na(condi)) -> at_respi
 ```
 
+# Analyse graphique 
+
 Ce premier graphique permet de montrer que l'alcalnité est fortement modifiée du changement de salinité. 
 
 ```{r}
@@ -35,8 +38,7 @@ Ce premier graphique permet de montrer que l'alcalnité est fortement modifiée 
   geom_rect(ymin = -Inf, ymax = Inf, xmin = 29.88, xmax = 30.38, alpha = 0.002) +
   labs(y = (expression(
     paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
-       color = "Conditions") +
-  facet_wrap(~ localisation)
+       color = "Conditions") 
 ```
 
 Si l'on s'intéresse uniquement au conditon sans l'expérience de respirométrie, on obtient le graphique ci-dessous.
@@ -50,7 +52,6 @@ at%>.%
   labs(y = (expression(
     paste("Alcalinité")~ paste("(mmol.kg"^{ "-1"})~ paste(")"))), 
        color = "Conditions")
-
 ```
 
 Par condition , on obtient les graphiques suivants
@@ -90,11 +91,7 @@ at%>.%
        color = "Conditions")
 ```
 
-
-
-
 Calculons l'absorptions :
-
 - le respiromètre 8 est truffé d'erreur d'encodage et n'est donc aucunement utilisable.
 
 ```{r}
@@ -138,24 +135,14 @@ nubbins$respi <- nubbins$respiro
 at_respi <- left_join(at_respi, nubbins[ , -1], by = "respi")
 
 at_respi %>.%
-  mutate(., calc_rate =  (at_diff/2)/skeleton_weight) -> at_respi
+  mutate(., calc_rate =  ((at_diff/2)*100)) -> at_respi
 
-chart(at_respi, calc_rate ~ number_day  | localisation) +
-  geom_point()
-
-
-```
-
-
-
-```{r}
 at_respi$period[at_respi$cycle %in% c("C7", "C10")] <- "jour"
 at_respi$period[at_respi$cycle  %in% c("C4")] <- "nuit"
 
 chart(at_respi, calc_rate ~ number_day %col=% period | localisation) +
   geom_point()
 ```
-
 
 
 ```{r}
@@ -166,4 +153,33 @@ at_respi %>.%
   spread(., key = period, value = mean_sd) %>.%
   kable(.,  col.names = c("Conditions", "Taux calcification moyen (jour)", "Taux calcification moyen (nuit)"),caption = "Taux de calcification (± écart-type) pour les différentes conditions expérimentales. \\label{tab_calc}")
 ```
+
+# Analyse statistique 
+
+```{r}
+at_respi %>.%
+  group_by(., period, respi, condition) %>.%
+  summarise(., mean_respi = mean(calc_rate)) -> at_red
+```
+
+```{r}
+bartlett.test(mean_respi ~ condition, data = at_red)
+```
+
+```{r}
+at_red %>.%
+  group_by(., period, condition) %>.%
+  summarise(., mean = mean(mean_respi), sd = sd(mean_respi), count = sum(!is.na(mean_respi)))
+```
+
+```{r}
+anova(anova. <- lm(data = at_red, mean_respi ~ condition))
+at_red$condition <- as.factor(at_red$condition)
+summary(anovaComp. <- confint(multcomp::glht(anova.,
+  linfct = multcomp::mcp(condition = "Tukey")))) # Add a second factor if you want
+.oma <- par(oma = c(0, 5.1, 0, 0)); plot(anovaComp.); par(.oma); rm(.oma)
+```
+
+On obtient donc en conclusion une différence significative entre le control et le traitement hypersalin.
+
 
