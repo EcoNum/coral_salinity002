@@ -296,29 +296,42 @@ plot(-4:32, stress_recovery1(-4:32,- 1.2, 2, 3), type = "l", ylim = c(- 1.5, 1.5
 
 # Modélisation avec nlsList
 
+Objectif : Combiner les 2 conditions (hypersalin & hyposalin) en une seule modelisation grace a la fonction nlsList du package nlme. 
+
+## nlme::nlsList()
+Etape 1 : Vérifier que les paramètres obtenus pour le calcul des modèles séparés et combinés sont identiques
 ```{r}
 
 mod <- nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hypersalin", trace = TRUE, start = list(ymin = 0, ths = 2, thr = 3))
 summary(mod)
+mod1 <- nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hyposalin", trace = TRUE, start = list(ymin = 0, ths = 2, thr = 3))
+summary(mod1)
 
 # modelisation avec nlsList
-nmle::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), control = list(gr_visu$gr_divctrl[gr_visu$cond == "control"]), start = list(ymin = 0, ths = 2, thr = 3)) -> mod3
+nlme::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> mod2
+summary(mod2)
 
 ```
 
+On peut voir que les paramètres obtenus quelque soit la methode utilisée sont les memes.
+
 ## nlshelper::anova_nlslist()
-Description
-Applies an F-test to a non-linear regression model that includes a grouping variable (fit with nlsList), comparing it to a model without a grouping variable. This is a convenient way to test whether there is an overall effect of the grouping variable on the non-linear relationshi
+ 
+Etape 2 :  Voir si la variable de regroupement, ici "cond" a un effet sur les relations non linéaires en le comparant à un modèle sans regroupement. Pour ce faire, on utilise la fonction anova_nlsList du package nlshelper. 
+Cette fonction nécessite un premier objet "nlsfull" construit a partir de la fonction nlsList et tenant compte des regroupements en fonction de "cond" et un second, "nlsreduc" construit avec les memes données a partir de la fonction nls et ne tenant pas compte du paramètre "cond".
 
 ```{r}
 stats::nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> nlsreduc
-nmle::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> nlsfull
+nlme::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> nlsfull
 summary(nlsfull)
-nlshelper::anova_nlslist(nlsfull, nlsreduc)
+nlshelper::anova_nlslist(nlsfull, nlsreduc) -> test
 
 ```
+On peut voir que le paramètre "cond" a un effet sur les relations non linéaires
 
-Réalisation des graphiques en utilisant chart()
+
+
+#Réalisation des graphiques en utilisant chart()
 
 ```{r}
 gr_visu %>.%
