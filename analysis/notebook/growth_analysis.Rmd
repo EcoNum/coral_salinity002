@@ -248,6 +248,8 @@ class(mod1)
 print(mod) 
 ```
 
+# Division des valeurs à la moyenne des valeurs du controle par jour
+
 On va diviser la moyenne des points du controle par jour aux points des traitements par date. Il dès lors logique d'obtenir des différence de croissance nulle pour le modèle controle.
 
 ```{r}
@@ -284,27 +286,36 @@ gr_visu %>.%
 
 ```{r}
 stress_recovery1 <- function(t, ymin, ths, thr){
-  ymin - ymin  *(2^(-punif(t, max = 6)*6/ths) - 2^(-6/ths)*punif(t, max = 6) + (1-2^(-punif(t, min = 6, max = 106)*100/thr))) 
+  ymin + (1 - ymin)  *(2^(-punif(t, max = 6)*6/ths) - 2^(-6/ths)*punif(t, max = 6) + (1-2^(-punif(t, min = 6, max = 106)*100/thr))) 
 }
 
 plot(-4:32, stress_recovery1(-4:32,- 1.2, 2, 3), type = "l", ylim = c(- 1.5, 1.5)) +
  lines(-4:32, predict(lm_ctr, newdata = list(nd1 = -4:32)), type ="l", col = 2)
 
-mod <- nls(data = gr_visu, gr_dmctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hypersalin", trace = TRUE, start = list(ymin = 0, ths = 2, thr = 3))
+```
+
+# Modélisation avec nlsList
+
+```{r}
+
+mod <- nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hypersalin", trace = TRUE, start = list(ymin = 0, ths = 2, thr = 3))
 summary(mod)
 
-plot(data = gr_visu, gr_dmctrl ~ nd1, subset = gr_visu$cond == "hypersalin", ylim = c(- 1.5, 1.5)) +
-lines(gr_visu$nd1[gr_visu$cond == "hypersalin"], predict(mod), type = "l") +
-lines(-4:32, predict(lm_ctr, newdata = list(nd1 = -4:32)), type ="l", col = 2)
+# modelisation avec nlsList
+nmle::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), control = list(gr_visu$gr_divctrl[gr_visu$cond == "control"]), start = list(ymin = 0, ths = 2, thr = 3)) -> mod3
 
+```
 
+## nlshelper::anova_nlslist()
+Description
+Applies an F-test to a non-linear regression model that includes a grouping variable (fit with nlsList), comparing it to a model without a grouping variable. This is a convenient way to test whether there is an overall effect of the grouping variable on the non-linear relationshi
 
-mod1 <- nls(data = gr_visu, gr_dmctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hyposalin", trace = TRUE, start = list(ymin = -1, ths = 2, thr = 3))
-summary(mod1)
+```{r}
+stats::nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> nlsreduc
+nmle::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> nlsfull
+summary(nlsfull)
+nlshelper::anova_nlslist(nlsfull, nlsreduc)
 
-plot(data = gr_visu, gr_dmctrl ~ nd1, subset = gr_visu$cond == "hyposalin", ylim = c(- 1.5, 1.5)) +
-lines(gr_visu$nd1[gr_visu$cond == "hyposalin"], predict(mod1), type = "l") +
-lines(-4:32, predict(lm_ctr, newdata = list(nd1 = -4:32)), type ="l", col = 2)
 ```
 
 Réalisation des graphiques en utilisant chart()
