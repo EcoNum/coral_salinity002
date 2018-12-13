@@ -153,3 +153,13 @@ predict_fun.nls <- function(model, ...) {
 #   stat_function(fun = predict_fun(pur_3), aes(col = "Conique")) +
 #   geom_point() +
 #   labs(col = "Modèle")
+
+# Modelise the stress for dmctrl growth rate
+stress_recovery1 <- function(t, ymin, ths, thr){
+  ymin - ymin *(2^(-punif(t, max = 6)*6/ths) - 2^(-6/ths)*punif(t, max = 6) + (1-2^(-punif(t, min = 6, max = 106)*100/thr)))
+}
+
+stress_recovery2 <- function(t, ymin, ths, thr){
+  ymin + (1 - ymin)  *(2^(-punif(t, max = 6)*6/ths) - 2^(-6/ths)*punif(t, max = 6) + (1-2^(-punif(t, min = 6, max = 106)*100/thr)))
+}
+

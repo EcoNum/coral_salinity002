@@ -10,20 +10,81 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "README_fig/README-"
 )
 ```
 
+# Ecophysiological responses of Seriatopora hystrix (Dana, 1846) to short-term  hypo- and hypersaline stress
 
-# Réponse écophysiologique de *Seriatopora hystrix* (Dana, 1846) suite à un stress hypo ou hypersalin à court terme
+## Authors
 
-## Guyliann Engels & Nadège Georges.
+- Engels Guyliann
+- Nadèges Georges
+- Raphael Conotte
 
-Ce dépot couvre les recherches réalisés par Nadège Georges en vue de l’obtention du grade de Maître en Sciences Biologiques à l'UMONS durant l'année académique 2017-2018. Ces recherches présentées sous la forme d'un mémoire sont retravaillées par Engels Guyliann. 
+## Supervisor 
 
-Le promoteur de ce travail fut le professeur Philippe Grosjean. 
+- Philippe Grosjean
 
-### Résumé 
+## English abstract 
+
+Coral reefs are considered one of the most biodiverse marine ecosystems on the planet. Coral reefs host a large and various community of organisms such as fishes, echinoderms, plankton, etc. The coral reef is a perfect example of the Darwin Paradox, i.e. it has a high productivity when the available nutrients are low (oligotrophic seawater).  
+
+Coral reefs are threatened by several stressors. Most of these stressors are directly and indirectly linked to anthropogenic factors such as eutrophication, overfishing, climate change, etc. Salinity is another stressor.  The number of tropical storms and hurricanes has strongly increased over the past decades. These climatic events induce a sharp decrease in salinity a couple of days after their occurrence. Moreover, desalination to produce water for crop irrigation locally increases salinity in the sea. 
+An artificial coral reef mesocosm has been used to study the impact of hyposaline (28 PSU) and hypersaline (42 PSU) stresses on Seriatopora hystrix (Dana 1846), a hermatypic scleractinian coral. Modified conditions where established and maintained for 7 days from an initial value of 35 PSU. In each stress condition, we have observed that corals became paler (but did not bleach) and their growth rate declined (\autoref{gr}). The hypersaline stress had the strongest effect. Growth rate recovered three weeks after the salinity was readjusted to 35 PSU. A change in salinity, even on a short time negatively impacts S.hystrix. 
+
+
+
+```{r growth_rate, fig.cap= "Growth rate [%/day] over time [days] with three conditions: control (n=4), hypersaline (n=6)  and hyposaline (n=6). Three phases are highligthted: no stress, stress and after stress phases. \\label{gr}", warning=FALSE, echo=FALSE, message=FALSE}
+# packages ----------------------------------------------------------------
+SciViews::R
+source("R/function.R")
+
+# Growth rate----------------------------------------------------------------
+## importation  & reshape ---------------------------------------------------
+read("data/growth.rds") %>.%
+  select(., id, skeleton_weight, number_day, cond, phase) %>.%
+  group_by(., id) %>.%
+  arrange(., number_day) %>.%
+  mutate(.,
+         skw_log = log(skeleton_weight),
+         skm_log_lag = lag(skw_log),
+         nd_lag = lag(number_day),
+         gr_rate = (exp((skw_log - skm_log_lag)/(number_day-nd_lag)) -1)*100,
+         nd1 = number_day - 29) %>.%
+  filter(., !is.na(gr_rate))-> gr_visu
+
+gr_visu <- labelise(gr_visu, self = FALSE,
+                    label = list(nd1 = "Time",
+                                 gr_rate = "Growth rate"),
+                    units = list(gr_rate = "%/d",
+                                 nd1 = "day"))
+
+gr_visu$cond1 <- factor(gr_visu$cond, 
+                        levels = c("control", "hypersalin", "hyposalin"), 
+                        labels = c("Control", "Hypersaline", "Hyposaline"))
+
+chart(gr_visu, formula  = gr_rate ~ nd1 %col=% id) +
+  geom_point(show.legend = FALSE) +
+  geom_line(show.legend = FALSE) +
+  geom_vline(xintercept = c(0,6), linetype = "twodash", color = "red", alpha = .4) +
+  facet_wrap(~ cond1, nrow = 3) +
+  scale_x_continuous(breaks = c(-5, 0, 5, 10, 15, 20, 25, 30)) +
+  annotate("rect", xmin = -Inf, xmax = 0, ymin = 1.6, ymax = 1.9, 
+           alpha = .2, fill = "blue") +
+  annotate("text", x = -3, y = 1.75 ,label = "No stress") +
+  annotate("rect", xmin = 0, xmax = 6, ymin = 1.6, ymax = 1.9, 
+           alpha = .2, fill = "red") +
+  annotate("text", x = 3, y = 1.75 ,label = "Stress") +
+  annotate("rect", xmin = 6, xmax = Inf, ymin = 1.6, ymax = 1.9, 
+           alpha = .2, fill = "green") +
+  annotate("text", x = 20, y = 1.75 ,label = "After stress")
+```
+
+
+## Résumé 
+
+Réponse écophysiologique de *Seriatopora hystrix* (Dana, 1846) suite à un stress hypo ou hypersalin à court terme
 
 **Mot-clés** : Scléractinaire, écophysiologiques, salinité, photosynthèse, respirométrie
 
@@ -34,6 +95,8 @@ Le but de cette étude est de comprendre les effets des changements de salinité
 Les effets engendrés sont, tout d’abord, une décoloration des boutures face aux changements de salinité, une diminution du taux de croissance, et du taux de calcification, dans les deux conditions. Ces diminutions étant plus marquées dans le cas d’une augmentation de salinité. Un autre effet important des chocs salins s’observe par la diminution de la photosynthèse nette chez l’ensemble des boutures stressées et d’une diminution de la respiration chez celles mises en conditions hypersalines. A la fin de l’expérience de salinité, le taux de croissance et la coloration ont continué à être monitorés et ont montré un retour à des conditions normales après plusieurs semaines à une salinité de 35.
 
 ### Note
+
+Ce dépot couvre les recherches réalisés par Nadège Georges en vue de l’obtention du grade de Maître en Sciences Biologiques à l'UMONS durant l'année académique 2017-2018. Ces recherches présentées sous la forme d'un mémoire sont retravaillées par Engels Guyliann. 
  
 L'écriture de ce travail en Rmarkdown se base sur le dépot de suivant :
 

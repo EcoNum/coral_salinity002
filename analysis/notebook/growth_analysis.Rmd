@@ -7,7 +7,7 @@ output:
     toc: yes
 ---
 
-
+Le taux de croissance calculé via le poids immergé permet d'etudier la croissance des coraux. 
 
 ```{r setup}
 SciViews::R
@@ -21,6 +21,7 @@ source(file = "../../R/function.R")
 
 ## Taux de croissance
 
+Le stress a été maintenu durant 6 jours du jour 4 au jour 10. 
 ```{r}
 growth %>.%
   filter(., ! is.na(nb_day_lag)) %>.%
@@ -35,17 +36,9 @@ chart(gr_visu, formula  = g_rate_day ~ nd %col=% id) +
 
 Première visualisation des graphiques par condition.
 
-## modélisation du taux de croissance
+## Modélisation du taux de croissance
 
 En partant du graphique ci-dessous, on réalise un modèle se basant sur un modèle polynomial d'ordre 2.
-
-```{r}
-chart(gr_visu, formula  = g_rate_day ~ nd %col=% id) +
-  geom_point(show.legend = FALSE) +
-  geom_line(show.legend = FALSE) +
-  geom_vline(xintercept = c(4, 7,10)) +
-  facet_wrap(~ cond, nrow = 3)
-```
 
 ```{r}
 # on définit le jour 4 comme point de départ
@@ -84,38 +77,30 @@ lines(-4:32, predict(lm_control, newdata = list(nd1 = -4:32)), type ="l", col = 
 # lines(-4:32, predict(lm_control, newdata = list(nd1 = -4:32)), type ="l", col = 2)
 ```
 
-# Soustraction des valeurs à la moyenne des valeurs du controle par jour
+# Modélisation en partant des valeurs moyennes de la croissance controle.
 
-on tente de soustraire un modèle linéaire avec une pente nulle et une ordonnée à l'origine de 0.93816 qui correspond à la moyenne des points 
+## Modélisation de la croissance du controle
 
 ```{r}
-chart(data = gr_visu, formula  = (g_rate_day - 1.130754) ~ nd) +
-  stat_summary(geom = "point", fun.y = "mean") +
-  stat_summary(geom = "line", fun.y = "mean") +
-  stat_summary(geom = "errorbar", width = 0.1,
-    fun.data = "mean_sdl",fun.args = list(mult = 1)) +
-  facet_wrap(~cond ,nrow =3) +
-  geom_vline(xintercept = c(4, 7,10), alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "red")
+gr_visu %>.% 
+  filter(., cond == "control") -> gr_cont
+
+summary(lm. <- lm(data = gr_cont, g_rate_day ~ nd))
+lm. %>.% (function (lm, model = lm[["model"]], vars = names(model))
+  chart(model, aes_string(x = vars[2], y = vars[1])) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ x))(.)
 ```
 
-On va soustraire la moyenne des points du controle au moyenne des points des traitements par date. Il dès lors logique d'obtenir des différence de croissance nulle pour le modèle controle.
+On observe que la pente n'est pas significativement différent. 
 
 ```{r}
 gr_visu %>.%
-  group_by(., number_day, cond, nd) %>.%
-  summarise(., gr_mean = mean(g_rate_day)) %>.%
-  ungroup(.) %>.%
-  group_by(., number_day, nd) %>.%
-  mutate(. , mean_diff = gr_mean - gr_mean[1]) -> gr_rd
-  
-chart(data = gr_rd, formula  =  mean_diff ~ nd) +
-  stat_summary(geom = "point", fun.y = "mean") +
-  stat_summary(geom = "line", fun.y = "mean")  +
-  facet_wrap(~cond ,nrow =3) +
-  geom_vline(xintercept = c(4, 7,10), alpha = 0.5) +
-  geom_hline(yintercept = 0, color = "red")
+  filter(., nd == 4) -> gr_acclim
+anova(anova. <- lm(data = gr_acclim, g_rate_day ~ cond))
 ```
+
+Nous observons qu'au 4^ième^ jour, il n'y a pas de différence significative entre les différents traitements. Nous soustrayons la moyenne par date du control à chaque groupe.
 
 On va soustraire la moyenne des points du controle par jour aux points des traitements par date. Il dès lors logique d'obtenir des différence de croissance nulle pour le modèle controle.
 
@@ -134,13 +119,9 @@ chart(data = gr_visu, formula  = gr_dmctrl ~ nd1 %col=% cond) +
   facet_wrap(~ cond ,nrow =3) +
   geom_vline(xintercept = c(0, 6)) +
   scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9")) 
-
-# +   
-#   stat_function(fun = predict_fun(mod1), color ="#56B4E9") +
-#   stat_function(fun = predict_fun(mod),  color = "#E69F00") + 
-#   geom_hline(yintercept = 0, color = "#999999") +
-#   theme(legend.position="bottom")
 ```
+
+Les variations dans le controle expriment la variabilité de croissnce.
 
 ```{r}
 # calculer le modele du control
@@ -168,8 +149,6 @@ summary(mod)
 plot(data = gr_visu, gr_dmctrl ~ nd1, subset = gr_visu$cond == "hypersalin", ylim = c(- 1.5, 1.5)) +
 lines(gr_visu$nd1[gr_visu$cond == "hypersalin"], predict(mod), type = "l") +
 lines(-4:32, predict(lm_ctr, newdata = list(nd1 = -4:32)), type ="l", col = 2)
-
-
 
 mod1 <- nls(data = gr_visu, gr_dmctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hyposalin", trace = TRUE, start = list(ymin = -1, ths = 2, thr = 3))
 summary(mod1)
@@ -241,20 +220,11 @@ chart(data = gr_visu, formula  = gr_dmctrl ~ nd1 %col=% cond) +
   theme(legend.position="bottom")
 ```
 
-
-```{r}
-print(mod1)
-class(mod1)
-print(mod) 
-```
-
 # Division des valeurs à la moyenne des valeurs du controle par jour
 
 On va diviser la moyenne des points du controle par jour aux points des traitements par date. Il dès lors logique d'obtenir des différence de croissance nulle pour le modèle controle.
 
 ```{r}
-
-
 gr_visu$gr_divctrl <- gr_visu$g_rate_day / gr_visu$control_mean
 
 chart(data = gr_visu, formula  = gr_divctrl ~ nd1 %col=% cond) +
@@ -262,14 +232,6 @@ chart(data = gr_visu, formula  = gr_divctrl ~ nd1 %col=% cond) +
   facet_wrap(~ cond ,nrow =3) +
   geom_vline(xintercept = c(0, 6)) +
   scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9")) 
-
-
-
-# +   
-#   stat_function(fun = predict_fun(mod1), color ="#56B4E9") +
-#   stat_function(fun = predict_fun(mod),  color = "#E69F00") + 
-#   geom_hline(yintercept = 0, color = "#999999") +
-#   theme(legend.position="bottom")
 ```
 
 ```{r}
@@ -299,9 +261,10 @@ plot(-4:32, stress_recovery1(-4:32,- 1.2, 2, 3), type = "l", ylim = c(- 1.5, 1.5
 Objectif : Combiner les 2 conditions (hypersalin & hyposalin) en une seule modelisation grace a la fonction nlsList du package nlme. 
 
 ## nlme::nlsList()
-Etape 1 : Vérifier que les paramètres obtenus pour le calcul des modèles séparés et combinés sont identiques
-```{r}
 
+Etape 1 : Vérifier que les paramètres obtenus pour le calcul des modèles séparés et combinés sont identiques
+
+```{r}
 mod <- nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hypersalin", trace = TRUE, start = list(ymin = 0, ths = 2, thr = 3))
 summary(mod)
 mod1 <- nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), subset = gr_visu$cond == "hyposalin", trace = TRUE, start = list(ymin = 0, ths = 2, thr = 3))
@@ -325,19 +288,17 @@ stats::nls(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr), s
 nlme::nlsList(data = gr_visu, gr_divctrl ~ stress_recovery1(nd1, ymin, ths, thr) | cond, subset = gr_visu$cond %in% c("hypersalin", "hyposalin"), start = list(ymin = 0, ths = 2, thr = 3)) -> nlsfull
 summary(nlsfull)
 nlshelper::anova_nlslist(nlsfull, nlsreduc) -> test
-
 ```
+
 On peut voir que le paramètre "cond" a un effet sur les relations non linéaires
 
-
-
-#Réalisation des graphiques en utilisant chart()
+# Réalisation des graphiques en utilisant chart()
 
 ```{r}
 gr_visu %>.%
   filter(., cond == "hypersalin") %>.%
-  chart(., gr_dmctrl ~ nd1) + 
-  geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
+  chart(., gr_divctrl ~ nd1) + 
+  geom_hline(yintercept = 1, color = "red", alpha = 0.8) +
   geom_point() +
   stat_function(fun = predict_fun(mod)) +
   labs( y = "Taux de croissance normalisé [%/j]") +
@@ -347,47 +308,27 @@ gr_visu %>.%
 ```{r}
 gr_visu %>.%
   filter(., cond == "hyposalin") %>.%
-  chart(., gr_dmctrl ~ nd1) + 
-  geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
+  chart(., gr_divctrl ~ nd1) + 
+  geom_hline(yintercept = 1, color = "red", alpha = 0.8) +
   geom_point() +
   stat_function(fun = predict_fun(mod1))+
   labs( y = "Taux de croissance normalisé [%/j]") +
   geom_vline(xintercept = c(0, 6), alpha = 0.5)
 ```
 
-```{r}
-gr_visu %>.%
-  filter(., cond == "hyposalin") %>.%
-  chart(., gr_dmctrl ~ nd1) + 
-  geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
-  geom_point() +
-  stat_function(fun = predict_fun(mod1), aes(color = "hyposalin model")) +
-  stat_function(fun = predict_fun(mod),  aes(color = "hypersalin model")) +
-  labs( y = "Taux de croissance normalisé [%/j]") +
-  geom_vline(xintercept = c(0, 6), alpha = 0.5) +
-  scale_y_continuous(limits =c(-1.3, 0.5))-> a
-
-gr_visu %>.%
-  filter(., cond == "hypersalin") %>.%
-  chart(., gr_dmctrl ~ nd1) + 
-  geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
-  geom_point() +
-  stat_function(fun = predict_fun(mod1), aes(color = "hyposalin model")) +
-  stat_function(fun = predict_fun(mod),  aes(color = "hypersalin model")) +
-  labs( y = "Taux de croissance normalisé [%/j]") +
-  geom_vline(xintercept = c(0, 6), alpha = 0.5) +
-  scale_y_continuous(limits =c(-1.3, 0.5)) -> b
-
-combine_charts(list(a,b),nrow = 2, labels = c("hyposalin","hypersalin"), common.legend = TRUE)
-```
-
 
 ```{r}
-print(mod1)
-class(mod1)
-print(mod) 
+chart(data = gr_visu, formula  = gr_divctrl ~ nd1 %col=% cond) +
+  geom_point() +
+  facet_wrap(~ cond ,nrow =3) +
+  geom_hline(yintercept = 1, color = "red", alpha = 0.8) +
+  geom_vline(xintercept = c(0, 6)) +
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9")) +
+  stat_function(fun = predict_fun(mod1), color ="#56B4E9") +
+  stat_function(fun = predict_fun(mod),  color = "#E69F00") +
+  geom_hline(yintercept = 0, color = "#999999") +
+  theme(legend.position="bottom")
 ```
-
 
 # Analyse statistique 
 

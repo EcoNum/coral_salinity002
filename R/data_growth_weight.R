@@ -97,6 +97,8 @@ growth %>.%
          nb_day_lag = lag(number_day),
          g_rate_day = (((skeleton_weight - sk_weight_lag) / sk_weight_lag)/(number_day - nb_day_lag))*100) -> growth
 
+
+
 # chart(growth, formula  = g_rate_day ~ number_day %col=% id |cond ) +
 #   geom_point() +
 #   geom_line() +
