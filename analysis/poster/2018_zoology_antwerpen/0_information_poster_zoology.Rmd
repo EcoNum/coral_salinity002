@@ -1,0 +1,21 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README_fig/README-"
+)
+```
+
+# Information sur la rédaction du poster
+
+Ce poster a été réalisé dans le cadre du congrès de zoologie 2018 organisé par la Royal belgian zoology society. 
+
+Les analyses en lien avec travail sont disponible dans le R script : poster_zoology_2018.R
